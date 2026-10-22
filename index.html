@@ -36,7 +36,7 @@ footer{text-align:center;font-size:12px;color:#5b6778;padding:14px}
 </style>
 </head>
 <body>
-<header><h1>Pedidos de Amostras e Pagamentos 2026</h1><p>Fonte: PAINEL COORDENADORES.xlsx - aba BASE CONSOLIDADA - atualizado em 22/10/2026 08:39</p></header>
+<header><h1>Pedidos de Amostras e Pagamentos 2026</h1><p>Fonte: PAINEL COORDENADORES.xlsx - aba BASE CONSOLIDADA - atualizado em 22/10/2026 08:44</p></header>
 <div class="wrap">
 <div class="filtros">
 <div><label>Mês</label><select id="fM"></select></div>
@@ -44,7 +44,7 @@ footer{text-align:center;font-size:12px;color:#5b6778;padding:14px}
 <div><label>Coordenador</label><select id="fC"></select></div>
 <div><label>Distribuidora</label><select id="fD"></select></div>
 <div><label>Status</label><select id="fS"><option value="-1">TODOS</option><option value="1">ENTREGUE</option><option value="0">PENDENTE</option></select></div>
-<div><label>Buscar pedido / nota / produto</label><input id="fB" placeholder="Digite nº ou nome do produto"></div><button onclick="limpar()">Limpar</button><button class="bx" onclick="baixarExcel()" title="Baixa os pedidos filtrados em planilha">Baixar Excel</button><button class="bx" onclick="imprimir()" title="Imprimir ou salvar em PDF">PDF</button>
+<div><label>Buscar pedido / nota / produto</label><input id="fB" placeholder="Digite nº ou nome do produto"></div><button onclick="limpar()">Limpar</button><button class="bx" onclick="baixarExcel()" title="Baixa os pedidos filtrados em planilha">Baixar Excel</button><button class="bx" onclick="baixarPDF()" title="Baixa os pedidos filtrados em PDF">PDF</button>
 </div>
 <div id="pinfo" class="pinfo"></div><div class="resumo"><div>Pedidos: <b id="rP"></b></div><div>Entregues: <b id="rE"></b></div><div>Pendentes: <b id="rN"></b></div><div>Unidades: <b id="rU"></b></div><div>Valor total: <b id="rV"></b></div></div>
 <div class="card"><table><thead><tr><th data-k="0">Mês</th><th data-k="1">Tipo</th><th data-k="2">Coordenador</th><th data-k="3">Distribuidora</th><th data-k="4" class="n">Pedido</th><th data-k="5" class="n">Nota fiscal</th><th data-k="6">Entrega</th><th data-k="7">Previsão</th><th>Produtos / Quantidade</th><th data-k="8" class="n">Qtd total</th><th data-k="9" class="n">Valor (R$)</th></tr></thead><tbody id="tb"></tbody></table></div>
@@ -1077,6 +1077,15 @@ LF.forEach(function (r) {TU += r[8]; TV += r[9]; var its = r[10].length ? r[10] 
 L.push(['', '', '', '', '', '', '', '', '', 'TOTAL', TU, dec(TV)].join(';'));
 var b = new Blob(['\ufeff' + L.join('\r\n')], {type: 'text/csv;charset=utf-8'}); var a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = nomeArq('.csv'); document.body.appendChild(a); a.click(); setTimeout(function () {URL.revokeObjectURL(a.href); a.remove();}, 500);}
 function imprimir() {$('pinfo').textContent = filtrosTxt(); var t = document.title; document.title = nomeArq(''); window.print(); document.title = t;}
+var PDF_LIBS = ['https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js', 'https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.8.2/jspdf.plugin.autotable.min.js'];
+function carregarJS(u, cb) {var e = document.createElement('script'); e.src = u; e.onload = cb; e.onerror = function () {alert('Não foi possível gerar o PDF (verifique a internet). Vou abrir a impressão no lugar.'); imprimir();}; document.head.appendChild(e);}
+function baixarPDF() {if (!LF.length) {alert('Nenhum pedido para os filtros atuais.'); return;} if (window.jspdf && window.jspdf.jsPDF && window.jspdf.jsPDF.API.autoTable) {gerarPDF(); return;} carregarJS(PDF_LIBS[0], function () {carregarJS(PDF_LIBS[1], gerarPDF);});}
+function gerarPDF() {var doc = new window.jspdf.jsPDF({orientation: 'landscape', unit: 'pt', format: 'a4'}); var TU = 0, TV = 0;
+doc.setFontSize(14); doc.setTextColor(31, 59, 99); doc.text('Pedidos de Amostras e Pagamentos 2026', 30, 36); doc.setFontSize(9); doc.setTextColor(60, 60, 60); doc.text(doc.splitTextToSize(filtrosTxt(), 780), 30, 52);
+var body = LF.map(function (r) {TU += r[8]; TV += r[9]; return [M[r[0]], O[r[1]], C[r[2]], D[r[3]], String(r[4]), String(r[5] || '-'), dt(r[6]) || 'PENDENTE', dt(r[7]) || '-', r[10].map(function (it) {return P[it[0]][1] + ' - ' + fmt(it[1]);}).join('\n'), fmt(r[8]), brl(r[9])];});
+doc.autoTable({startY: 66, head: [['Mês', 'Tipo', 'Coordenador', 'Distribuidora', 'Pedido', 'Nota fiscal', 'Entrega', 'Previsão', 'Produtos / Quantidade', 'Qtd total', 'Valor (R$)']], body: body, foot: [['', '', '', '', '', '', '', '', 'TOTAL (' + fmt(LF.length) + ' pedidos)', fmt(TU), brl(TV)]], showFoot: 'lastPage', styles: {fontSize: 7, cellPadding: 3, valign: 'top'}, headStyles: {fillColor: [31, 59, 99]}, footStyles: {fillColor: [31, 122, 77]}, alternateRowStyles: {fillColor: [245, 247, 251]}, columnStyles: {4: {halign: 'right'}, 5: {halign: 'right'}, 8: {cellWidth: 210}, 9: {halign: 'right'}, 10: {halign: 'right'}}, margin: {left: 30, right: 30},
+didDrawPage: function () {var pg = doc.internal.getNumberOfPages(); doc.setFontSize(8); doc.setTextColor(120); doc.text('Página ' + pg, doc.internal.pageSize.getWidth() - 70, doc.internal.pageSize.getHeight() - 15);}});
+doc.save(nomeArq('.pdf'));}
 render();
 </script>
 </body>
