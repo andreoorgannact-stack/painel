@@ -11,10 +11,10 @@ header{background:#1f3b63;color:#fff;padding:22px 32px}
 header h1{margin:0;font-size:24px}
 header p{margin:6px 0 0;opacity:.8;font-size:13px}
 .wrap{max-width:1500px;margin:0 auto;padding:20px 24px}
-.filtros{display:grid;grid-template-columns:repeat(5,1fr) 1.5fr auto;gap:12px;background:#fff;padding:16px;border-radius:10px;border:1px solid #dfe4ec}
+.filtros{display:grid;grid-template-columns:repeat(5,1fr) 1.5fr auto auto auto;gap:12px;background:#fff;padding:16px;border-radius:10px;border:1px solid #dfe4ec}
 .filtros label{font-size:11px;font-weight:700;color:#5b6778;text-transform:uppercase;display:block;margin-bottom:4px}
 select,input{width:100%;padding:8px;border:1px solid #dfe4ec;border-radius:6px;font-size:14px;background:#fffbe6}
-button{align-self:end;padding:9px 16px;border:0;border-radius:6px;background:#2f6fb5;color:#fff;font-weight:600;cursor:pointer}
+button{align-self:end;padding:9px 16px;border:0;border-radius:6px;background:#2f6fb5;color:#fff;font-weight:600;cursor:pointer}.bx{background:#1f7a4d}.bx:hover{background:#18633e}.pinfo{display:none;font-size:13px;margin:10px 0;color:#1d2633}@media print{.pinfo{display:block}}
 .resumo{display:flex;flex-wrap:wrap;gap:28px;margin:16px 0;font-size:14px;background:#fff;border:1px solid #dfe4ec;border-radius:10px;padding:12px 16px}
 .resumo b{font-size:18px;color:#1f3b63}
 .card{background:#fff;border:1px solid #dfe4ec;border-radius:10px;overflow:auto;max-height:72vh}
@@ -36,7 +36,7 @@ footer{text-align:center;font-size:12px;color:#5b6778;padding:14px}
 </style>
 </head>
 <body>
-<header><h1>Pedidos de Amostras e Pagamentos 2026</h1><p>Fonte: PAINEL COORDENADORES.xlsx - aba BASE CONSOLIDADA - atualizado em 22/10/2026 08:29</p></header>
+<header><h1>Pedidos de Amostras e Pagamentos 2026</h1><p>Fonte: PAINEL COORDENADORES.xlsx - aba BASE CONSOLIDADA - atualizado em 22/10/2026 08:39</p></header>
 <div class="wrap">
 <div class="filtros">
 <div><label>Mês</label><select id="fM"></select></div>
@@ -44,9 +44,9 @@ footer{text-align:center;font-size:12px;color:#5b6778;padding:14px}
 <div><label>Coordenador</label><select id="fC"></select></div>
 <div><label>Distribuidora</label><select id="fD"></select></div>
 <div><label>Status</label><select id="fS"><option value="-1">TODOS</option><option value="1">ENTREGUE</option><option value="0">PENDENTE</option></select></div>
-<div><label>Buscar pedido / nota / produto</label><input id="fB" placeholder="Digite nº ou nome do produto"></div><button onclick="limpar()">Limpar</button>
+<div><label>Buscar pedido / nota / produto</label><input id="fB" placeholder="Digite nº ou nome do produto"></div><button onclick="limpar()">Limpar</button><button class="bx" onclick="baixarExcel()" title="Baixa os pedidos filtrados em planilha">Baixar Excel</button><button class="bx" onclick="imprimir()" title="Imprimir ou salvar em PDF">PDF</button>
 </div>
-<div class="resumo"><div>Pedidos: <b id="rP"></b></div><div>Entregues: <b id="rE"></b></div><div>Pendentes: <b id="rN"></b></div><div>Unidades: <b id="rU"></b></div><div>Valor total: <b id="rV"></b></div></div>
+<div id="pinfo" class="pinfo"></div><div class="resumo"><div>Pedidos: <b id="rP"></b></div><div>Entregues: <b id="rE"></b></div><div>Pendentes: <b id="rN"></b></div><div>Unidades: <b id="rU"></b></div><div>Valor total: <b id="rV"></b></div></div>
 <div class="card"><table><thead><tr><th data-k="0">Mês</th><th data-k="1">Tipo</th><th data-k="2">Coordenador</th><th data-k="3">Distribuidora</th><th data-k="4" class="n">Pedido</th><th data-k="5" class="n">Nota fiscal</th><th data-k="6">Entrega</th><th data-k="7">Previsão</th><th>Produtos / Quantidade</th><th data-k="8" class="n">Qtd total</th><th data-k="9" class="n">Valor (R$)</th></tr></thead><tbody id="tb"></tbody></table></div>
 </div>
 <footer>Clique no título de uma coluna para ordenar. Pendente = pedido sem data de entrega na base. Valor = total do pedido.</footer>
@@ -1049,7 +1049,7 @@ var DATA = {
 [9,1,5,46,125274,"139654","",46337,99,2717.37,[[2,30],[1,20],[58,35],[22,14]]]
 ]};
 var M = DATA.M, O = DATA.O, C = DATA.C, D = DATA.D, P = DATA.P, R = DATA.R;
-var sk = 0, sd = 1;
+var sk = 0, sd = 1, LF = [];
 function brl(n) {return n.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL', minimumFractionDigits: 2});}
 function fmt(n) {return n.toLocaleString('pt-BR', {maximumFractionDigits: 0});}
 function dt(n) {if (n === '' || n === null) return ''; if (typeof n !== 'number') return String(n); var d = new Date(Date.UTC(1899, 11, 30) + n * 864e5); return ('0' + d.getUTCDate()).slice(-2) + '/' + ('0' + (d.getUTCMonth() + 1)).slice(-2) + '/' + d.getUTCFullYear();}
@@ -1065,10 +1065,18 @@ function key(r, k) {if (k === 2) return C[r[2]]; if (k === 3) return D[r[3]]; if
 var ths = document.querySelectorAll ? document.querySelectorAll('th[data-k]') : []; for (var i = 0; i < ths.length; i++) {ths[i].onclick = function () {var k = +this.getAttribute('data-k'); if (sk === k) sd = -sd; else {sk = k; sd = 1;} render();};}
 function render() {var m = +$('fM').value, o = +$('fO').value, c = +$('fC').value, d = +$('fD').value, s = +$('fS').value, b = $('fB').value.trim().toUpperCase();
 var F = R.filter(function (r) {var ent = r[6] !== ''; return (m < 0 || r[0] === m) && (o < 0 || r[1] === o) && (c < 0 || r[2] === c) && (d < 0 || r[3] === d) && (s < 0 || (s === 1) === ent) && (b === '' || String(r[4]).indexOf(b) >= 0 || String(r[5]).indexOf(b) >= 0 || r[11].indexOf(b) >= 0);});
-F.sort(function (a, b2) {var x = key(a, sk), y = key(b2, sk); return (x < y ? -1 : x > y ? 1 : (a[4] - b2[4])) * sd;});
+LF = F; F.sort(function (a, b2) {var x = key(a, sk), y = key(b2, sk); return (x < y ? -1 : x > y ? 1 : (a[4] - b2[4])) * sd;});
 var V = 0, E = 0, U = 0; F.forEach(function (r) {V += r[9]; U += r[8]; if (r[6] !== '') E++;});
 $('rP').textContent = fmt(F.length); $('rE').textContent = fmt(E); $('rN').textContent = fmt(F.length - E); $('rU').textContent = fmt(U); $('rV').textContent = brl(V);
 $('tb').innerHTML = F.map(function (r) {var st = r[6] !== '' ? dt(r[6]) : '<span class="pill pend">PENDENTE</span>'; var pl = '<ul class="prods">' + r[10].map(function (it) {return '<li><span>' + P[it[0]][1] + '</span><span class="q">' + fmt(it[1]) + '</span></li>';}).join('') + '</ul>'; return '<tr><td class="w">' + M[r[0]] + '</td><td class="w">' + O[r[1]] + '</td><td class="w">' + C[r[2]] + '</td><td class="w">' + D[r[3]] + '</td><td class="n">' + r[4] + '</td><td class="n">' + (r[5] || '-') + '</td><td class="w">' + st + '</td><td class="w">' + (dt(r[7]) || '-') + '</td><td>' + pl + '</td><td class="n">' + fmt(r[8]) + '</td><td class="n">' + brl(r[9]) + '</td></tr>';}).join('') || '<tr><td colspan="11">Nenhum pedido para os filtros.</td></tr>';}
+function nomeArq(ext) {var d = +$('fD').value, o = +$('fO').value, m = +$('fM').value; var h = new Date(); var n = 'Relatorio_' + (d < 0 ? 'TODAS' : D[d]) + '_' + (o < 0 ? 'TODOS' : O[o]) + (m < 0 ? '' : '_' + M[m]) + '_' + ('0' + h.getDate()).slice(-2) + '-' + ('0' + (h.getMonth() + 1)).slice(-2) + '-' + h.getFullYear(); return n.replace(/[\\/:*?"<>|]/g, '-') + ext;}
+function filtrosTxt() {var t = []; [['fM', 'Mês'], ['fO', 'Tipo'], ['fC', 'Coordenador'], ['fD', 'Distribuidora'], ['fS', 'Status']].forEach(function (f) {var e = $(f[0]); t.push(f[1] + ': ' + e.options[e.selectedIndex].text);}); if ($('fB').value.trim() !== '') t.push('Busca: ' + $('fB').value.trim()); return t.join('  |  ');}
+function baixarExcel() {if (!LF.length) {alert('Nenhum pedido para os filtros atuais.'); return;} function q(t) {t = String(t === null || t === undefined ? '' : t); return /[";\r\n]/.test(t) ? '"' + t.replace(/"/g, '""') + '"' : t;} function dec(n) {return (+n || 0).toFixed(2).replace('.', ',');}
+var L = [['Filtros: ' + filtrosTxt()].map(q).join(';'), '', ['Mês', 'Tipo', 'Coordenador', 'Distribuidora', 'Pedido', 'Nota fiscal', 'Entrega', 'Previsão', 'Cód. produto', 'Produto', 'Quantidade', 'Valor do pedido (R$)'].join(';')]; var TU = 0, TV = 0;
+LF.forEach(function (r) {TU += r[8]; TV += r[9]; var its = r[10].length ? r[10] : [null]; its.forEach(function (it, i) {L.push([M[r[0]], O[r[1]], C[r[2]], D[r[3]], r[4], r[5] || '', dt(r[6]) || 'PENDENTE', dt(r[7]), it ? P[it[0]][0] : '', it ? P[it[0]][1] : '', it ? it[1] : '', i === 0 ? dec(r[9]) : ''].map(q).join(';'));});});
+L.push(['', '', '', '', '', '', '', '', '', 'TOTAL', TU, dec(TV)].join(';'));
+var b = new Blob(['\ufeff' + L.join('\r\n')], {type: 'text/csv;charset=utf-8'}); var a = document.createElement('a'); a.href = URL.createObjectURL(b); a.download = nomeArq('.csv'); document.body.appendChild(a); a.click(); setTimeout(function () {URL.revokeObjectURL(a.href); a.remove();}, 500);}
+function imprimir() {$('pinfo').textContent = filtrosTxt(); var t = document.title; document.title = nomeArq(''); window.print(); document.title = t;}
 render();
 </script>
 </body>
