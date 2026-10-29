@@ -43,7 +43,7 @@ body.locked header,body.locked .wrap,body.locked footer{display:none}
 </head>
 <body>
 <div id="login"><div class="box"><h2>Painel 2026 - acesso restrito</h2><input id="lgS" type="password" placeholder="Senha" autocomplete="current-password"><button onclick="entrar()">Entrar</button><div id="lgE"></div></div></div>
-<header><h1>Pedidos de Amostras e Pagamentos 2026</h1><p>Fonte: PAINEL COORDENADORES.xlsx - aba BASE CONSOLIDADA - atualizado em 29/10/2026 09:29</p><nav class="tabs"><button id="t1" class="on" onclick="pagina(1)">Pedidos</button><button id="t2" onclick="pagina(2)">Gasto Bonificações</button></nav></header>
+<header><h1>Pedidos de Amostras e Pagamentos 2026</h1><p>Fonte: PAINEL COORDENADORES.xlsx - aba BASE CONSOLIDADA - atualizado em 29/10/2026 09:39</p><nav class="tabs"><button id="t1" class="on" onclick="pagina(1)">Pedidos</button><button id="t2" onclick="pagina(2)">Gasto Bonificações</button></nav></header>
 <div class="wrap" id="pg1">
 <div class="filtros">
 <div><label>Mês</label><select id="fM"></select></div>
@@ -57,12 +57,12 @@ body.locked header,body.locked .wrap,body.locked footer{display:none}
 <div class="card"><table><thead><tr><th data-k="0">Mês</th><th data-k="1">Tipo</th><th data-k="2">Coordenador</th><th data-k="3">Distribuidora</th><th data-k="4" class="n">Pedido</th><th data-k="5" class="n">Nota fiscal</th><th data-k="6">Entrega</th><th data-k="7">Previsão</th><th>Produtos / Quantidade</th><th data-k="8" class="n">Qtd total</th><th data-k="9" class="n">Valor (R$)</th></tr></thead><tbody id="tb"></tbody></table></div>
 </div>
 <div class="wrap" id="pg2" style="display:none">
+<p style="font-size:13px;color:#5b6778;margin:0 0 10px">Clique em um coordenador para ver os pedidos dele (clique de novo para voltar a todos)</p>
 <div class="filtros f2"><div><label>Coordenador técnico</label><select id="bC"></select></div><button class="bx" onclick="baixarBonif()" title="Baixa a conta corrente em planilha">Baixar Excel</button><div></div></div>
 <div class="resumo"><div>Disponível no ano: <b id="bD"></b></div><div>Gasto bonificações: <b id="bG"></b></div><div>Saldo: <b id="bS"></b></div><div>% consumido: <b id="bP"></b></div></div>
 <div class="card"><table class="cc"><thead id="bh"></thead><tbody id="bt"></tbody><tfoot id="bf"></tfoot></table></div>
 <h3 class="sub" id="bdt"></h3>
 <div class="card"><table class="cc"><thead><tr><th>Mês</th><th>Coord. técnico</th><th>Distribuidora</th><th class="n">Pedido</th><th class="n">Nota fiscal</th><th>Entrega</th><th class="n">Valor (R$)</th></tr></thead><tbody id="bdb"></tbody><tfoot id="bdf"></tfoot></table></div>
-<p style="font-size:12px;color:#5b6778">Clique em um coordenador para ver os pedidos dele (clique de novo para voltar a todos). Disponível e gastos vêm da aba BONIFICAÇÃO da planilha (origem BONIFICAÇÃO da BASE CONSOLIDADA).</p>
 </div>
 <footer id="ft">Clique no título de uma coluna para ordenar. Pendente = pedido sem data de entrega na base. Valor = total do pedido.</footer>
 <script>
