@@ -373,25 +373,54 @@
           overflow: visible;
         }
       }
+      #login .pwd {
+        position: relative;
+      }
+      #login .pwd input {
+        width: 100%;
+        box-sizing: border-box;
+        padding-right: 40px;
+      }
+      #login .pwd .olho {
+        position: absolute;
+        top: 50%;
+        right: 6px;
+        transform: translateY(-50%);
+        width: auto;
+        margin: 0;
+        padding: 4px;
+        background: none;
+        border: 0;
+        box-shadow: none;
+        color: #667085;
+        cursor: pointer;
+        line-height: 0;
+      }
+      #login .pwd .olho:hover {
+        color: #1f3b63;
+      }
     </style>
   </head>
   <body>
     <div id="login">
       <div class="box">
         <h2>Painel pedidos - 2026</h2>
-        <input
-          id="lgS"
-          type="password"
-          placeholder="Senha"
-          autocomplete="current-password"
-        /><button onclick="entrar()">Entrar</button>
+        <div class="pwd">
+          <input
+            id="lgS"
+            type="password"
+            placeholder="Senha"
+            autocomplete="current-password"
+          /><button type="button" id="olho" class="olho" onclick="verSenha()" title="Mostrar senha" aria-label="Mostrar senha"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg></button>
+        </div>
+        <button onclick="entrar()">Entrar</button>
         <div id="lgE"></div>
       </div>
     </div>
     <header>
       <h1>Pedidos de Amostras e Pagamentos 2026</h1>
       <p>
-        Fonte: PAINEL COORDENADORES.xlsx - aba BASE CONSOLIDADA - atualizado em 30/10/2026 11:38</p>
+        Fonte: PAINEL COORDENADORES.xlsx - aba BASE CONSOLIDADA - atualizado em 30/10/2026 13:57</p>
       <nav class="tabs">
         <button id="t1" class="on" onclick="pagina(1)">Pedidos</button
         ><button id="t2" onclick="pagina(2)">Gasto Bonificações</button>
@@ -959,6 +988,18 @@ var DATA = null;
         iniciar1();
         iniciar2();
       }
+      // ---------- Mostrar/ocultar senha ----------
+      var OLHO_ABERTO = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>';
+      var OLHO_FECHADO = '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94"/><path d="M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19"/><path d="M14.12 14.12a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/></svg>';
+      function verSenha() {
+        var i = $('lgS'), b = $('olho'), mostrar = i.type === 'password';
+        i.type = mostrar ? 'text' : 'password';
+        b.innerHTML = mostrar ? OLHO_FECHADO : OLHO_ABERTO;
+        b.title = mostrar ? 'Ocultar senha' : 'Mostrar senha';
+        b.setAttribute('aria-label', b.title);
+        i.focus();
+      }
+
 
       // ---------- Inicialização ----------
       if (typeof ENC === 'string' && ENC) {
