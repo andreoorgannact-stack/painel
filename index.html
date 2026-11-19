@@ -173,7 +173,7 @@
         <div class="logo"><img class="logoG" alt="" width="32" height="46"></div>
         <div>
           <h1>Pedidos de Amostras e Pagamentos 2026</h1>
-          <p>Fonte: PAINEL COORDENADORES.xlsx - aba BASE CONSOLIDADA - atualizado em 18/11/2026 09:34</p>
+          <p>Fonte: PAINEL COORDENADORES.xlsx - aba BASE CONSOLIDADA - atualizado em 19/11/2026 10:22</p>
         </div>
       </div>
       <nav class="tabs">
@@ -417,7 +417,7 @@ var DATA = null;
       function nomeArq(ext) {
         var d = +$('fD').value, o = +$('fO').value, m = +$('fM').value;
         var h = new Date();
-        var n = 'Relatorio_' + (d < 0 ? 'TODAS' : D[d]) + '_' + (o < 0 ? 'TODOS' : O[o]) + (m < 0 ? '' : '_' + M[m]) +
+        var n = 'Relatorio de Pedidos_' + (d < 0 ? 'TODAS' : D[d]) + '_' + (o < 0 ? 'TODOS' : O[o]) + (m < 0 ? '' : '_' + M[m]) +
           '_' + ('0' + h.getDate()).slice(-2) + '-' + ('0' + (h.getMonth() + 1)).slice(-2) + '-' + h.getFullYear();
         return n.replace(/[\\/:*?"<>|]/g, '-') + ext;
       }
